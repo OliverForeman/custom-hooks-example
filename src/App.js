@@ -1,26 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+const App = () => {
+  const name = useInputForm('Mary');
+  const surname = useInputForm('Poppins');
+  const windowWidth = useWindowWidth();
+  useDocumentTitle(`${name.value} ${surname.value}`)
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <label>Name</label>
+        <input {...name} />
+      </div>
+      <div>
+        <label>Surname</label>
+        <input {...surname} />
+      </div>
+      <div>{`Window width: ${windowWidth}`}</div>
     </div>
   );
 }
 
 export default App;
+
+// ##################################################
+
+const useWindowWidth = () => {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+
+  return windowWidth;
+}
+
+const useDocumentTitle = (title) => {
+  useEffect(() => {
+    document.title = title;
+  })
+}
+
+const useInputForm = (initialValue) => {
+  const [value, setValue] = useState(initialValue);
+
+  const handleValueChange = (e) => {
+    setValue(e.target.value);
+  }
+
+  return {
+    value,
+    onChange: handleValueChange
+  }
+}
